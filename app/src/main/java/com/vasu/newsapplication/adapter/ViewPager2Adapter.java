@@ -2,15 +2,13 @@ package com.vasu.newsapplication.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vasu.newsapplication.CategoryOnClickInterface;
-import com.vasu.newsapplication.R;
+import com.vasu.newsapplication.databinding.SearchByButtonBinding;
 
 public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
 
@@ -30,17 +28,20 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(ctx).inflate(R.layout.search_by_button, parent, false);
-        return new ViewHolder(view);
+        SearchByButtonBinding binding = SearchByButtonBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false);
+        return new ViewHolder(binding);
     }
 
     // This method binds the screen with the view
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // This will set the images in imageview
-        holder.button.setText(searchKeyWords[position]);
+        holder.binding.btnSearchKeyword.setText(searchKeyWords[position]);
 
-        holder.button.setOnClickListener(v -> onClickInterface.onCategoryClick(searchKeyWords[position]));
+        holder.binding.btnSearchKeyword.setOnClickListener(v -> onClickInterface.onCategoryClick(searchKeyWords[position]));
     }
 
     // This Method returns the size of the Array
@@ -51,11 +52,11 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
 
     // The ViewHolder class holds the view
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        Button button;
+        SearchByButtonBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            button = itemView.findViewById(R.id.btnSearchKeyword);
+        public ViewHolder(@NonNull SearchByButtonBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

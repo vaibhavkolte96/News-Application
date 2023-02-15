@@ -13,9 +13,9 @@
     <color name="colorPrimary">#32D8C0</color>
     <color name="colorPrimaryVariant">#135C52</color>
 
-    <color name="news_title_color">#FF000000</color>
-    <color name="news_text">#FF000000</color>
-    <color name="title_bar">#FFBB86FC</color>
-    <color name="cardview_background">#FFFFFFFF</color>
+    <color name="news_title_color">#FFFFFFFF</color>
+    <color name="news_text">#FFFFFFFF</color>
+    <color name="title_bar">#454242</color>
+    <color name="cardview_background">#A39D9D</color>
 
 </resources>

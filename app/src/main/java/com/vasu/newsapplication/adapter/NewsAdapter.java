@@ -2,18 +2,23 @@ package com.vasu.newsapplication.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.vasu.newsapplication.R;
+import com.vasu.newsapplication.databinding.NewsItemLayoutBinding;
 import com.vasu.newsapplication.model.NewsModel;
 import com.vasu.newsapplication.view.NewsDetailsActivity;
 
@@ -32,28 +37,48 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.news_item_layout, parent, false);
-        return new NewsViewHolder(view);
+        NewsItemLayoutBinding binding = NewsItemLayoutBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false);
+        return new NewsViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         try {
-            holder.title.setText(articleList.get(position).getTitle());
-            holder.desc.setText(articleList.get(position).getDescription());
-            holder.author.setText(articleList.get(position).getAuthor());
-            holder.content.setText(articleList.get(position).getContent());
-            holder.publisher.setText("PublishedAt : "+articleList.get(position).getPublishedAt());
+            holder.binding.txtTitle.setText(articleList.get(position).getTitle());
+            holder.binding.txtDesc.setText(articleList.get(position).getDescription());
+            holder.binding.txtAuthor.setText(articleList.get(position).getAuthor());
+            holder.binding.txtContent.setText(articleList.get(position).getContent());
+            holder.binding.txtPublisher.setText("PublishedAt : "+articleList.get(position).getPublishedAt());
 
 
-            Glide.with(context)
-                    .load(articleList.get(position).getUrlToImage())
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .into(holder.newsImage);
+            if(TextUtils.isEmpty(articleList.get(position).getUrlToImage())){
+                holder.binding.imageShimmerEffect.setVisibility(View.GONE);
+            }else {
+                Glide.with(context)
+                        .load(articleList.get(position).getUrlToImage())
+                        .centerCrop()
+                        .addListener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                holder.binding.imageShimmerEffect.setVisibility(View.GONE);
+                                holder.binding.newsImage.setVisibility(View.VISIBLE);
+                                return false;
+                            }
+                        })
+//                    .placeholder(R.drawable.ic_launcher_background)
+                        .into(holder.binding.newsImage);
+            }
 
 
-            holder.cardView.setOnClickListener(v -> {
+            holder.binding.cardView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, NewsDetailsActivity.class);
                 intent.putExtra("URL",articleList.get(position).getUrl());
                 context.startActivity(intent);
@@ -70,23 +95,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public static class NewsViewHolder extends RecyclerView.ViewHolder {
-
-        TextView title, desc, author,publisher,content;
-        ImageView newsImage;
-        CardView cardView;
-
-        public NewsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.txtTitle);
-            desc = itemView.findViewById(R.id.txtDesc);
-            author = itemView.findViewById(R.id.txtAuthor);
-            content = itemView.findViewById(R.id.txtContent);
-            publisher = itemView.findViewById(R.id.txtPublisher);
-
-            cardView = itemView.findViewById(R.id.cardView);
-
-
-            newsImage = itemView.findViewById(R.id.newsImage);
+        NewsItemLayoutBinding binding;
+        public NewsViewHolder(@NonNull NewsItemLayoutBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

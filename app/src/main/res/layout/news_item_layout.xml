@@ -1,79 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
     android:padding="8dp"
-    android:id="@+id/cardView"
-    android:backgroundTint="@color/cardBackground"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
             android:padding="4dp"
-            android:textStyle="bold"
-            android:textColor="@color/black" />
+            android:textColor="@color/news_title_color"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/imageShimmerEffect"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="4dp">
+                <include layout="@layout/shimmer_effect" />
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
             <ImageView
                 android:id="@+id/newsImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:padding="4dp"
                 android:layout_marginStart="8dp"
+                android:padding="4dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/ic_launcher_background"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/txtDesc"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:lines="4"
-                android:textSize="16sp"
-                android:padding="4dp"
-                android:ellipsize="end"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:textColor="@color/black" />
+                android:ellipsize="end"
+                android:lines="4"
+                android:padding="4dp"
+                android:textColor="@color/news_text"
+                android:textSize="16sp" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/txtContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:padding="4dp"
-            android:ellipsize="end"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/black" />
+            android:ellipsize="end"
+            android:padding="4dp"
+            android:textColor="@color/news_text"
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/txtAuthor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:padding="4dp"
-            android:gravity="end"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/black" />
+            android:gravity="end"
+            android:padding="4dp"
+            android:textColor="@color/news_text"
+            android:textSize="12sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/gray"/>
+            android:background="@color/gray" />
 
         <TextView
             android:id="@+id/txtPublisher"
@@ -81,9 +94,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:padding="4dp"/>
+            android:textColor="@color/news_text"
+            android:padding="4dp" />
     </LinearLayout>
-
 
 
 </androidx.cardview.widget.CardView>

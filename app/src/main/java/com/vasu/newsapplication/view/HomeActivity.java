@@ -1,15 +1,20 @@
 package com.vasu.newsapplication.view;
 
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.vasu.newsapplication.CategoryOnClickInterface;
+import com.vasu.newsapplication.R;
 import com.vasu.newsapplication.adapter.NewsAdapter;
 import com.vasu.newsapplication.adapter.ViewPager2Adapter;
 import com.vasu.newsapplication.databinding.ActivityHomeBinding;
@@ -17,21 +22,21 @@ import com.vasu.newsapplication.model.NewsModel;
 import com.vasu.newsapplication.viewModel.NewsViewModel;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = HomeActivity.class.getName();
     private ActivityHomeBinding binding;
-    NewsViewModel viewModel;
-
+    private NewsViewModel viewModel;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         viewModel = new ViewModelProvider(HomeActivity.this).get(NewsViewModel.class);
 
@@ -40,19 +45,23 @@ public class HomeActivity extends AppCompatActivity {
 
         viewModel.getNewsObserver().observe(this,newsModelObserver);
 
-        viewModel.makeAPICall();
 
         try {
 
 //            ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this, new CategoryOnClickInterface() {
 //                @Override
 //                public void onCategoryClick(String category) {
+//                    binding.progressBar.setVisibility(View.VISIBLE);
 //                    viewModel.makeAPICall(category);
 //                }
 //            });
 
-            ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this,
-                    category -> viewModel.makeAPICall(category)); // same as above comment 6 line
+            ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this, category -> {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                viewModel.makeAPICall(category);
+            });
+
+
             binding.btnRecyclerView.setAdapter(viewPager2Adapter);
             binding.btnRecyclerView.setLayoutManager(new LinearLayoutManager(this,
                     LinearLayoutManager.HORIZONTAL, false));
@@ -60,20 +69,40 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
 
-        binding.btnSearch.setOnClickListener(v -> {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-            if (!TextUtils.isEmpty(Objects.requireNonNull(binding.etSearchText.getText()).toString())) {
-                try {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
-                viewModel.makeAPICall(binding.etSearchText.getText().toString());
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        MenuItem searchViewItem = menu.findItem(R.id.app_bar_search);
+       searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                viewModel.makeAPICall(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+            searchView.onActionViewCollapsed();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void showData(NewsModel news) {

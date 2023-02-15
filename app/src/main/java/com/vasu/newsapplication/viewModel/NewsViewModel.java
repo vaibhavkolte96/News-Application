@@ -26,11 +26,12 @@ public class NewsViewModel extends ViewModel {
     private MutableLiveData<NewsModel> newsModel;
 
 
-    public NewsViewModel() {
-        newsModel = new MutableLiveData<>();
-    }
 
     public MutableLiveData<NewsModel> getNewsObserver() {
+        if (newsModel == null) {
+            newsModel = new MutableLiveData<>();
+            makeAPICall();
+        }
         return newsModel;
     }
 
@@ -39,30 +40,7 @@ public class NewsViewModel extends ViewModel {
         Call<NewsModel> call = apiService
                 .getEverything("techcrunch.com,thenextweb.com",
                         "1c5c80bf1ee34f17a3df9fe95b5112b6");
-
-        call.enqueue(new Callback<NewsModel>() {
-            @Override
-            public void onResponse(@NonNull Call<NewsModel> call, @NonNull Response<NewsModel> response) {
-                try {
-                    if (response.isSuccessful()) {
-                        Log.e(TAG, "onResponse: " + Objects.requireNonNull(response.body()));
-                        newsModel.postValue(response.body());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<NewsModel> call, @NonNull Throwable t) {
-                try {
-                    Log.e(TAG, "onFailure: Something went wrong : " + t.getMessage());
-                    newsModel.postValue(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        callNewsAPI(call);
     }
 
 
@@ -74,31 +52,38 @@ public class NewsViewModel extends ViewModel {
             call = apiService
                     .searchNews(text, String.valueOf(LocalDate.now()), "publishedAt", "1c5c80bf1ee34f17a3df9fe95b5112b6");
         }
+        callNewsAPI(call);
+    }
 
-        if (call != null) {
-            call.enqueue(new Callback<NewsModel>() {
-                @Override
-                public void onResponse(@NonNull Call<NewsModel> call, @NonNull Response<NewsModel> response) {
-                    try {
-                        if (response.isSuccessful()) {
-                            Log.e(TAG, "onResponse: " + Objects.requireNonNull(response.body()));
-                            newsModel.postValue(response.body());
+    private void callNewsAPI(Call<NewsModel> call){
+        try{
+            if (call != null) {
+                call.enqueue(new Callback<NewsModel>() {
+                    @Override
+                    public void onResponse(@NonNull Call<NewsModel> call, @NonNull Response<NewsModel> response) {
+                        try {
+                            if (response.isSuccessful()) {
+                                Log.e(TAG, "onResponse: " + Objects.requireNonNull(response.body()));
+                                newsModel.postValue(response.body());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<NewsModel> call, @NonNull Throwable t) {
-                    try {
-                        Log.e(TAG, "onFailure: Something went wrong : " + t.getMessage());
-                        newsModel.postValue(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(@NonNull Call<NewsModel> call, @NonNull Throwable t) {
+                        try {
+                            Log.e(TAG, "onFailure: Something went wrong : " + t.getMessage());
+                            newsModel.postValue(null);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
