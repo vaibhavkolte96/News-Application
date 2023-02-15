@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">News Application</string>
+    <string name="api_key" translatable="false">1c5c80bf1ee34f17a3df9fe95b5112b6</string>
+
+</resources>
